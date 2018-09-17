@@ -10,23 +10,23 @@ import sys
 
 def create_table():
     # creating an postgres database table.
-    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432") # creating a connection
+    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432'") # creating a connection
     cur = conn.cursor() # creating a cursor object
-    cur.execute("CREATE TABLE store (item TEXT, quantity INTEGER, price REAL)") # write an sql query
+    cur.execute("CREATE TABLE IF NOT EXISTS store (item TEXT, quantity INTEGER, price REAL)") # write an sql query
     conn.commit() # commiting the changes
     conn.close() # close database connection
 
 def insert(item,quantity,price):
     # inserting files to a database
-    conn=psycopg2.connect('lite.db') # creating a connection
+    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432'") # creating a connection
     cur = conn.cursor() # creating a cursor object
-    cur.execute("INSERT INTO store VALUES (?,?,?)", (item,quantity,price))
+    cur.execute("INSERT INTO store VALUES (%s,%s,%s)", (item,quantity,price))
     conn.commit()
     conn.close()
 
 def view():
     # view the database content
-    conn=psycopg2.connect('lite.db')
+    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432'")
     cur=conn.cursor()
     cur.execute("SELECT * FROM store")
     rows=cur.fetchall()
@@ -35,18 +35,20 @@ def view():
 
 def delete(item):
     # view the database content
-    conn=psycopg2.connect('lite.db')
+    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432'")
     cur=conn.cursor()
-    cur.execute("DELETE FROM store WHERE item=?",(item,))
+    cur.execute("DELETE FROM store WHERE item=%s",(item,))
     conn.commit()
     conn.close()
 
 def update(quantity,price,item):
-    conn=psycopg2.connect('lite.db')
+    conn=psycopg2.connect("dbname='database1' user='postgres' password='postgres123' host='localhost' port='5432'")
     cur=conn.cursor()
-    cur.execute("UPDATE store SET quantity=?, price=? WHERE item=?", (quantity,price,item))
+    cur.execute("UPDATE store SET quantity=%s, price=%s WHERE item=%s", (quantity,price,item))
     conn.commit()
     conn.close()
+
+#create_table()
 
 print('-'*35)
 print('Insert data to database | Press 1')
@@ -67,12 +69,14 @@ while True:
         delete_item = input('enter ITEM NAME to delete: ')
         delete(delete_item)
     elif user_input == 4:
-        update_item = input('Enter QUANTITY, PRICE, ITEM to update:')
+        update_item = input('Enter QUANTIY,PRICE,ITEM NAME to update:')
         sliced = update_item.split(',')
         print(sliced)
         update(sliced[0],sliced[1],sliced[2])
     elif user_input == 0:
-        print('CLOSING CONNECTION TO THE DATABASE!')
+        print('-'*30)
+        print('Closing Connection.\nApplication Closed!')
+        print('-'*30)
         sys.exit()
     else:
         print('Option not recognized. Try Again!')

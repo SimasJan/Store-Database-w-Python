@@ -7,7 +7,6 @@ Quit:		 \q
 Create database: createdb name
 Delete database: dropdb name
 Access database: psql name
-
 Create table:	 CREATE TABLE cities (...);
 Remove table:	 DROP TABLE tablename;
 Populate table:	 INSERT INTO weather VALUES ('..',...);
